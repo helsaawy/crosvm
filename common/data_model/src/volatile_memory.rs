@@ -79,7 +79,7 @@ pub fn calc_offset(base: usize, offset: usize) -> Result<usize> {
 pub trait VolatileMemory {
     /// Gets a slice of memory at `offset` that is `count` bytes in length and supports volatile
     /// access.
-    fn get_slice(&self, offset: usize, count: usize) -> Result<VolatileSlice>;
+    fn get_slice(&self, offset: usize, count: usize) -> Result<VolatileSlice<'_>>;
 }
 
 /// A slice of raw memory that supports volatile access. Like `std::io::IoSliceMut`, this type is
@@ -91,7 +91,7 @@ pub struct VolatileSlice<'a>(IoBufMut<'a>);
 
 impl<'a> VolatileSlice<'a> {
     /// Creates a slice of raw memory that must support volatile access.
-    pub fn new(buf: &mut [u8]) -> VolatileSlice {
+    pub fn new(buf: &mut [u8]) -> VolatileSlice<'_> {
         VolatileSlice(IoBufMut::new(buf))
     }
 
@@ -135,7 +135,7 @@ impl<'a> VolatileSlice<'a> {
     }
 
     /// Returns this `VolatileSlice` as an `IoBufMut`.
-    pub fn as_iobuf(&self) -> &IoBufMut {
+    pub fn as_iobuf(&self) -> &IoBufMut<'_> {
         &self.0
     }
 
@@ -145,7 +145,7 @@ impl<'a> VolatileSlice<'a> {
         iovs: &'slice [VolatileSlice<'mem>],
     ) -> &'slice [IoBufMut<'mem>] {
         // Safe because `VolatileSlice` is ABI-compatible with `IoBufMut`.
-        unsafe { slice::from_raw_parts(iovs.as_ptr() as *const IoBufMut, iovs.len()) }
+        unsafe { slice::from_raw_parts(iovs.as_ptr() as *const IoBufMut<'_>, iovs.len()) }
     }
 
     /// Creates a copy of this slice with the address increased by `count` bytes, and the size
@@ -259,7 +259,7 @@ impl<'a> VolatileSlice<'a> {
     /// # Ok(())
     /// # }
     /// ```
-    pub fn copy_to_volatile_slice(&self, slice: VolatileSlice) {
+    pub fn copy_to_volatile_slice(&self, slice: VolatileSlice<'_>) {
         unsafe {
             copy(
                 self.as_mut_ptr() as *const u8,
@@ -361,13 +361,13 @@ unsafe fn is_all_zero_naive(head_addr: usize, tail_addr: usize) -> bool {
 }
 
 impl<'a> VolatileMemory for VolatileSlice<'a> {
-    fn get_slice(&self, offset: usize, count: usize) -> Result<VolatileSlice> {
+    fn get_slice(&self, offset: usize, count: usize) -> Result<VolatileSlice<'_>> {
         self.sub_slice(offset, count)
     }
 }
 
 impl PartialEq<VolatileSlice<'_>> for VolatileSlice<'_> {
-    fn eq(&self, other: &VolatileSlice) -> bool {
+    fn eq(&self, other: &VolatileSlice<'_>) -> bool {
         let size = self.size();
         if size != other.size() {
             return false;
@@ -405,7 +405,7 @@ mod tests {
     }
 
     impl VolatileMemory for VecMem {
-        fn get_slice(&self, offset: usize, count: usize) -> Result<VolatileSlice> {
+        fn get_slice(&self, offset: usize, count: usize) -> Result<VolatileSlice<'_>> {
             let mem_end = calc_offset(offset, count)?;
             if mem_end > self.mem.len() {
                 return Err(Error::OutOfBounds { addr: mem_end });

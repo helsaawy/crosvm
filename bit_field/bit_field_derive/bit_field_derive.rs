@@ -4,7 +4,7 @@
 
 #![recursion_limit = "256"]
 
-extern crate proc_macro;
+use proc_macro;
 
 use proc_macro2::Span;
 use proc_macro2::TokenStream;

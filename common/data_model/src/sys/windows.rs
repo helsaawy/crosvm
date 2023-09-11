@@ -44,7 +44,7 @@ impl PlatformIoBuf for IoBuf {
 
 pub(crate) struct DebugIoBuf(pub(crate) WSABUF);
 impl Debug for DebugIoBuf {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         f.debug_struct("WSABUF")
             .field("buf", &self.0.buf)
             .field("len", &self.0.len)

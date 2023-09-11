@@ -9,6 +9,7 @@
 
 // Do nothing on unix as win_util is windows only.
 #![cfg(windows)]
+#![allow(clippy::not_unsafe_ptr_arg_deref)]
 
 mod large_integer;
 pub use crate::large_integer::*;

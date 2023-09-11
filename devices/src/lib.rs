@@ -131,6 +131,17 @@ pub use self::serial_device::SerialType;
 pub use self::software_tpm::SoftwareTpm;
 pub use self::suspendable::DeviceState;
 pub use self::suspendable::Suspendable;
+#[cfg(feature = "usb")]
+#[macro_use]
+mod register_space;
+#[cfg(feature = "usb")]
+pub mod usb;
+#[cfg(feature = "usb")]
+mod utils;
+// #[cfg(feature = "usb")]
+// pub use self::usb::backend::host_backend::host_backend_device_provider::HostBackendDeviceProvider;
+#[cfg(feature = "usb")]
+pub use self::usb::xhci::xhci_controller::XhciController;
 pub use self::virtcpufreq::VirtCpufreq;
 pub use self::virtio::VirtioMmioDevice;
 pub use self::virtio::VirtioPciDevice;
@@ -143,13 +154,6 @@ cfg_if::cfg_if! {
         mod proxy;
         pub mod vmwdt;
         pub mod vfio;
-        #[cfg(feature = "usb")]
-        #[macro_use]
-        mod register_space;
-        #[cfg(feature = "usb")]
-        pub mod usb;
-        #[cfg(feature = "usb")]
-        mod utils;
 
         pub use self::pci::{
             CoIommuDev, CoIommuParameters, CoIommuUnpinPolicy, PciBridge, PcieDownstreamPort,
@@ -164,8 +168,6 @@ cfg_if::cfg_if! {
         pub use self::proxy::ProxyDevice;
         #[cfg(feature = "usb")]
         pub use self::usb::backend::host_backend::host_backend_device_provider::HostBackendDeviceProvider;
-        #[cfg(feature = "usb")]
-        pub use self::usb::xhci::xhci_controller::XhciController;
         pub use self::vfio::VfioContainer;
         pub use self::vfio::VfioDevice;
         pub use self::vfio::VfioDeviceType;

@@ -45,7 +45,7 @@ impl PlatformIoBuf for IoBuf {
 
 pub(crate) struct DebugIoBuf(pub(crate) iovec);
 impl Debug for DebugIoBuf {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         f.debug_struct("iovec")
             .field("iov_base", &self.0.iov_base)
             .field("iov_len", &self.0.iov_len)

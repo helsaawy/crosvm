@@ -145,7 +145,7 @@ unsafe impl<'a> Send for IoBufMut<'a> {}
 unsafe impl<'a> Sync for IoBufMut<'a> {}
 
 impl<'a> Debug for IoBufMut<'a> {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         f.debug_struct("IoBufMut")
             .field("iobuf", &DebugIoBuf(self.iobuf))
             .field("phantom", &self.phantom)

@@ -9,6 +9,9 @@ default-run = "crosvm"
 name = "crosvm"
 path = "src/main.rs"
 
+[lib]
+path = "devices/src/lib.rs"
+
 [profile.release]
 panic = 'abort'
 opt-level = 3
